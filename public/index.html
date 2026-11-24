@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Helpdesk Lokal — Ridwan</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 14.5 8 6l4 6 2-3 3 5.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <div class="brand-text">
+          <strong>Helpdesk</strong>
+          <span id="brand-sub">Memuat…</span>
+        </div>
+      </div>
+      <nav class="tabs" aria-label="Halaman">
+        <button class="tab active" data-page="dashboard">Dashboard</button>
+        <button class="tab" data-page="tiket">Tiket <span id="nav-open" class="count"></span></button>
+        <button class="tab" data-page="penanganan">Penanganan L2</button>
+        <button class="tab" data-page="kpi">KPI</button>
+        <button class="tab" data-page="kpi-missing">KPI belum diinput <span id="nav-missing" class="count" hidden></span></button>
+      </nav>
+      <div class="top-right">
+        <span id="sync-state" class="sync muted">menghubungkan…</span>
+        <button id="btn-refresh" class="btn">Muat ulang</button>
+      </div>
+    </header>
+
+    <div id="errbar" class="errbar" hidden></div>
+
+    <main class="main">
+      <section id="page-dashboard" class="page">
+        <div class="stats" id="dash-stats"></div>
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Progress selesai</h2></div>
+            <div id="gauge" class="gauge"></div>
+            <div id="gauge-legend" class="legend"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Tiket per hari <span class="muted">14 hari</span></h2></div>
+            <div id="bars" class="bars-chart"></div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="panel-head"><h2>Perlu perhatian <span id="open-count" class="count"></span></h2></div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr>
+                <th>No tiket</th><th>Judul</th><th>Stage</th><th>Team</th><th>Teknisi</th><th>Waktu</th><th>Update</th>
+              </tr></thead>
+              <tbody id="open-list"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section id="page-tiket" class="page" hidden>
+        <section class="panel">
+          <div class="filters">
+            <select id="f-stage"><option value="">Semua stage</option></select>
+            <select id="f-team"><option value="">Semua team</option></select>
+            <select id="f-channel"><option value="">Semua channel</option></select>
+            <input id="f-q" type="search" placeholder="Cari no, judul, customer…" />
+          </div>
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead><tr>
+                <th>No tiket</th><th>Judul</th><th>Stage</th><th>Team</th><th>Teknisi</th><th>Customer</th><th>Waktu</th><th>Update</th>
+              </tr></thead>
+              <tbody id="ticket-list"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section id="page-penanganan" class="page" hidden>
+        <section class="panel">
+          <div class="filters wrap">
+            <div class="range">
+              <input type="date" id="l2-from" />
+              <span class="muted">sampai</span>
+              <input type="date" id="l2-to" />
+              <button id="l2-today" class="btn sm">Hari ini</button>
+              <button id="l2-7d" class="btn sm">7 hari</button>
+              <button id="l2-30d" class="btn sm">30 hari</button>
+              <button id="l2-aug" class="btn sm">Ags–skrg</button>
+            </div>
+            <select id="l2-team"><option value="">Semua team</option></select>
+            <select id="l2-user"><option value="">Semua teknisi</option></select>
+            <select id="l2-status">
+              <option value="">Semua status</option>
+              <option value="done">Selesai</option>
+              <option value="jalan">Masih jalan</option>
+            </select>
+            <select id="l2-sort">
+              <option value="mulai_desc">Mulai ↓ (terbaru)</option>
+              <option value="mulai_asc">Mulai ↑ (terlama)</option>
+              <option value="selesai_desc">Selesai ↓</option>
+              <option value="durasi_desc">Durasi ↓</option>
+              <option value="durasi_asc">Durasi ↑</option>
+              <option value="tiket_asc">No tiket A–Z</option>
+            </select>
+            <input id="l2-q" type="search" placeholder="Cari no tiket / teknisi / alasan…" />
+            <label class="check"><input type="checkbox" id="l2-hdt" /> Hanya HDT (gangguan)</label>
+            <label class="check"><input type="checkbox" id="l2-unsub" /> Hanya belum submit</label>
+            <button id="l2-csv" class="btn sm">CSV</button>
+            <button id="l2-copyall" class="btn sm">Copy semua</button>
+            <button id="l2-csv-d365" class="btn sm">CSV Dynamics</button>
+            <button id="l2-copy-d365" class="btn sm">Copy Dynamics</button>
+          </div>
+          <div id="l2-info" class="muted" style="margin-bottom:8px;font-size:12.5px"></div>
+          <div class="table-wrap">
+            <table class="tbl tbl-l2">
+              <thead><tr>
+                <th class="sortable col-tiket" data-sort="tiket_asc" title="Klik untuk urut">Tiket</th>
+                <th class="col-teknisi">Teknisi</th>
+                <th class="col-aktivitas">Aktivitas</th>
+                <th class="sortable col-waktu" data-sort="mulai_desc" title="Klik untuk urut">Mulai</th>
+                <th class="sortable col-waktu" data-sort="selesai_desc" title="Klik untuk urut">Selesai</th>
+                <th class="sortable col-durasi" data-sort="durasi_desc" title="Klik untuk urut">Durasi</th>
+                <th class="col-alasan">Alasan / Action</th>
+                <th class="col-log">Log</th>
+                <th class="col-aksi">Copy</th>
+                <th class="col-aksi">Submit</th>
+              </tr></thead>
+              <tbody id="l2-list"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section id="page-kpi" class="page" hidden>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>KPI penanganan <span id="kpi-team-label" class="muted"></span></h2>
+            <select id="kpi-team"><option value="">Semua team</option></select>
+          </div>
+          <div class="stats" id="kpi-cards"></div>
+        </section>
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Per teknisi</h2></div>
+            <div class="table-wrap">
+              <table class="tbl"><thead><tr><th>Nama</th><th>Penanganan</th><th>Rata-rata</th></tr></thead><tbody id="kpi-users"></tbody></table>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Per aktivitas</h2></div>
+            <div class="table-wrap">
+              <table class="tbl"><thead><tr><th>Aktivitas</th><th>Jumlah</th><th>Rata-rata</th></tr></thead><tbody id="kpi-acts"></tbody></table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="page-kpi-missing" class="page" hidden>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>KPI belum diinput <span class="muted">Cibitung FieldOps</span></h2>
+            <span id="km-sync" class="muted"></span>
+          </div>
+          <div class="filters wrap">
+            <div class="range">
+              <input type="date" id="km-from" />
+              <span class="muted">sampai</span>
+              <input type="date" id="km-to" />
+            </div>
+            <select id="km-team"><option value="">Semua team</option></select>
+            <select id="km-sort">
+              <option value="mulai_asc">Mulai ↑ (terlama)</option>
+              <option value="mulai_desc">Mulai ↓ (terbaru)</option>
+              <option value="selesai_desc">Selesai ↓</option>
+              <option value="durasi_desc">Durasi ↓</option>
+              <option value="durasi_asc">Durasi ↑</option>
+              <option value="tiket_asc">Tiket A–Z</option>
+            </select>
+            <input id="km-q" type="search" placeholder="Cari tiket / judul / action…" />
+            <label class="check"><input type="checkbox" id="km-unique" checked /> 1 baris per tiket</label>
+            <label class="check"><input type="checkbox" id="km-show-done" /> Tampilkan yang sudah</label>
+            <button id="km-copy" class="btn sm">Copy semua</button>
+            <button id="km-csv" class="btn sm">CSV Dynamics</button>
+          </div>
+          <div id="km-info" class="muted" style="margin-bottom:8px;font-size:12.5px"></div>
+          <div class="table-wrap">
+            <table class="tbl tbl-km">
+              <thead><tr>
+                <th class="sortable col-tiket" data-kmsort="tiket_asc" title="Klik untuk urut">Tiket</th>
+                <th class="col-judul">Judul</th>
+                <th class="sortable col-tgl" data-kmsort="mulai_asc" title="Klik untuk urut">Start Date</th>
+                <th class="col-jam">Start Time</th>
+                <th class="sortable col-tgl" data-kmsort="selesai_desc" title="Klik untuk urut">End Date</th>
+                <th class="col-jam">End Time</th>
+                <th class="sortable col-durasi" data-kmsort="durasi_desc" title="Klik untuk urut">Durasi</th>
+                <th class="col-lokasi">Location</th>
+                <th class="col-notes">Notes</th>
+                <th class="col-aksi">Status</th>
+              </tr></thead>
+              <tbody id="km-list"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="drawer" class="drawer" hidden>
+      <div class="drawer-backdrop" data-close="1"></div>
+      <aside class="drawer-sheet" role="dialog" aria-label="Detail tiket">
+        <button id="drawer-close" class="btn sm close">Tutup</button>
+        <div id="detail"></div>
+      </aside>
+    </div>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

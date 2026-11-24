@@ -1,0 +1,7 @@
+config.local.json
+node_modules/
+*.log
+
+# Data kerja (jangan masuk repo publik)
+exports/
+data/

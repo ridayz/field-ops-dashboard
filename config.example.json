@@ -1,0 +1,11 @@
+{
+  "url": "https://contoh.odoo.com",
+  "db": "nama_database",
+  "login": "email.login@perusahaan.com",
+  "apiKey": "tempel-api-key-di-sini",
+  "port": 4780,
+  "account": {
+    "nameContains": "Ridwan",
+    "unitContains": "Cibitung"
+  }
+}
