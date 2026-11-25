@@ -91,12 +91,12 @@ function renderStats() {
   const frac = pct / 100;
   $('gauge').innerHTML = `
     <svg viewBox="0 0 200 120">
-      <circle cx="100" cy="105" r="${R}" fill="none" stroke="#2a2d33" stroke-width="14" />
-      <circle cx="100" cy="105" r="${R}" fill="none" stroke="#d9a441" stroke-width="14" stroke-linecap="round"
+      <circle cx="100" cy="105" r="${R}" fill="none" stroke="#d7e0ea" stroke-width="14" />
+      <circle cx="100" cy="105" r="${R}" fill="none" stroke="#003070" stroke-width="14" stroke-linecap="round"
         stroke-dasharray="${(C * frac * 0.52).toFixed(1)} ${C.toFixed(1)}" transform="rotate(207 100 105)" />
-      <text x="100" y="95" text-anchor="middle" fill="#e8eaed" font-size="24" font-weight="600">${pct}%</text>
+      <text x="100" y="95" text-anchor="middle" fill="#003070" font-size="24" font-weight="600">${pct}%</text>
     </svg>`;
-  $('gauge-legend').innerHTML = `<span><i style="background:#d9a441"></i>Selesai ${closed}</span><span><i style="background:#2a2d33"></i>Lainnya ${(meta.total || 0) - closed}</span>`;
+  $('gauge-legend').innerHTML = `<span><i style="background:#003070"></i>Selesai ${closed}</span><span><i style="background:#d7e0ea"></i>Lainnya ${(meta.total || 0) - closed}</span>`;
 
   if (stats) {
     const max = Math.max(1, ...stats.byDay.map((d) => d.total));
@@ -107,9 +107,9 @@ function renderStats() {
       const h = Math.max(3, (d.total / max) * H);
       const x = (i * bw + 2).toFixed(1);
       const y = (H - h).toFixed(1);
-      const fill = d.total ? '#8a6a2a' : '#2a2d33';
-      return `<rect x="${x}" y="${y}" width="${(bw - 5).toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${fill}" opacity="${d.total ? 1 : 0.4}"><title>${d.date}: ${d.total} tiket (${d.open} terbuka)</title></rect>` +
-        (i % 2 ? '' : `<text x="${(i * bw + bw / 2).toFixed(1)}" y="${H + 16}" text-anchor="middle" fill="#76808c" font-size="10">${d.date.slice(5)}</text>`);
+      const fill = d.total ? '#4d79b3' : '#d7e0ea';
+      return `<rect x="${x}" y="${y}" width="${(bw - 5).toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="${fill}" opacity="${d.total ? 1 : 0.55}"><title>${d.date}: ${d.total} tiket (${d.open} terbuka)</title></rect>` +
+        (i % 2 ? '' : `<text x="${(i * bw + bw / 2).toFixed(1)}" y="${H + 16}" text-anchor="middle" fill="#6f8096" font-size="10">${d.date.slice(5)}</text>`);
     }).join('') + `</svg>`;
   }
 }

@@ -1,6 +1,6 @@
-# field-ops-dashboard
+# Helpdesk Ticket Field Ops
 
-Dashboard tiket gangguan milik satu akun: **Ridwan Field Ops Cibitung**.
+Dashboard tiket gangguan milik satu akun: **Ridwan Field Ops Cibitung**. (Folder project: `field-ops-dashboard`)
 Membaca data Helpdesk Odoo (`https://helpdesk.indonet.id`) dan menampilkannya di
 localhost. Hanya-baca ke Odoo: tidak ada tombol atau endpoint yang mengubah data Odoo.
 
