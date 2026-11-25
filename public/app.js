@@ -107,7 +107,7 @@ function renderStats() {
       const h = Math.max(3, (d.total / max) * H);
       const x = (i * bw + 2).toFixed(1);
       const y = (H - h).toFixed(1);
-      const fill = d.total ? '#4d79b3' : '#d7e0ea';
+      const fill = d.total ? '#003070' : '#d7e0ea';
       return `<rect x="${x}" y="${y}" width="${(bw - 5).toFixed(1)}" height="${h.toFixed(1)}" rx="4" fill="${fill}" opacity="${d.total ? 1 : 0.55}"><title>${d.date}: ${d.total} tiket (${d.open} terbuka)</title></rect>` +
         (i % 2 ? '' : `<text x="${(i * bw + bw / 2).toFixed(1)}" y="${H + 16}" text-anchor="middle" fill="#6f8096" font-size="10">${d.date.slice(5)}</text>`);
     }).join('') + `</svg>`;
